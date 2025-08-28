@@ -1,0 +1,70 @@
+package org.example.service;
+
+import org.example.model.Booking;
+import org.example.model.Customer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Stream;
+
+public class BookingServiceImplTest {
+    private BookingServiceImpl bookingService;
+
+    @BeforeEach
+    public void setUp() {
+        List<Customer> customersList = List.of(
+                new Customer(1, "John", 10),
+                new Customer(2, "Paul", 5),
+                new Customer(3, "Ringo", 12),
+                new Customer(4, "George", 4)
+        );
+
+        List<Booking> bookingList = List.of(
+                new Booking(1, 4, LocalDate.of(2025, 10, 1)),
+                new Booking(2, 2, LocalDate.of(2026, 1, 10)),
+                new Booking(3, 1, LocalDate.of(2025, 10, 1)),
+                new Booking(4, 3, LocalDate.of(2025, 10, 1))
+        );
+
+        bookingService = new BookingServiceImpl(customersList, bookingList);
+    }
+
+    @Test
+    public void calculateWindowsCleanedReturnsExpectedCount(){
+        Assertions.assertEquals(26, bookingService.calculateWindowsCleanedOnSpecificDate(LocalDate.of(2025, 10, 1)));
+        Assertions.assertEquals(5, bookingService.calculateWindowsCleanedOnSpecificDate(LocalDate.of(2026, 1, 10)));
+    }
+
+    @Test
+    public void calculateWindowsCleanedThrowsIllegalArgumentException(){
+        IllegalArgumentException illegalArgumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            bookingService.calculateWindowsCleanedOnSpecificDate(null);
+        });
+
+        Assertions.assertEquals("LocalDate is null", illegalArgumentException.getMessage());
+    }
+
+    @Test
+    public void calculateBookingCostReturnsExpectedCost(){
+        Assertions.assertEquals(20, bookingService.calculateTotalCostForBooking(1));
+        Assertions.assertEquals(25, bookingService.calculateTotalCostForBooking(2));
+        Assertions.assertEquals(50, bookingService.calculateTotalCostForBooking(3));
+        Assertions.assertEquals(60, bookingService.calculateTotalCostForBooking(4));
+        Assertions.assertEquals(0, bookingService.calculateTotalCostForBooking(5));
+    }
+
+    @Test
+    public void calculateBookingCostThrowsIllegalArgumentException(){
+        IllegalArgumentException illegalArgumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            bookingService.calculateTotalCostForBooking(5);
+        });
+
+        Assertions.assertEquals("Booking number not found", illegalArgumentException.getMessage());
+    }
+}
