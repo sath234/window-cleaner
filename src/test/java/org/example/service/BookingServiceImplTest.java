@@ -5,13 +5,8 @@ import org.example.model.Customer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class BookingServiceImplTest {
     private BookingServiceImpl bookingService;
@@ -44,11 +39,11 @@ public class BookingServiceImplTest {
 
     @Test
     public void calculateWindowsCleanedThrowsIllegalArgumentException(){
-        IllegalArgumentException illegalArgumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        NullPointerException nullPointerException = Assertions.assertThrows(NullPointerException.class, () -> {
             bookingService.calculateWindowsCleanedOnSpecificDate(null);
         });
 
-        Assertions.assertEquals("LocalDate is null", illegalArgumentException.getMessage());
+        Assertions.assertEquals("LocalDate cannot be null", nullPointerException.getMessage());
     }
 
     @Test

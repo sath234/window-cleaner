@@ -21,12 +21,12 @@ public class ValidationUtilTest {
                 Arguments.of(
                         List.of(new Customer(1, "Nathan", 5)),
                         duplicateCustomer,
-                        "Please provide a unique Customer object"
+                        "Duplicate Customer not allowed"
                 ),
                 Arguments.of(
                         List.of(new Booking(1, 1, LocalDate.now())),
                         duplicateBooking,
-                        "Please provide a unique Booking object"
+                        "Duplicate Booking not allowed"
                 )
         );
     }
@@ -68,15 +68,15 @@ public class ValidationUtilTest {
 
     static Stream<Arguments> nullObjectTestCases() {
         return Stream.of(
-                Arguments.of(null, "Customer", "Customer is null"),
-                Arguments.of(null, "Booking", "Booking is null")
+                Arguments.of(null, "Customer", "Customer cannot be null"),
+                Arguments.of(null, "Booking", "Booking cannot be null")
         );
     }
 
     @ParameterizedTest
     @MethodSource("nullObjectTestCases")
     public void checkObjectIsNotNullThrowsException(Object object, String objectType, String expectedMessage) {
-        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        NullPointerException exception = Assertions.assertThrows(NullPointerException.class, () -> {
             ValidationUtil.checkObjectIsNotNull(object, objectType);
         });
         
