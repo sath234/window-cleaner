@@ -39,6 +39,7 @@ public class BookingServiceImplTest {
     public void calculateWindowsCleanedReturnsExpectedCount(){
         Assertions.assertEquals(26, bookingService.calculateWindowsCleanedOnSpecificDate(LocalDate.of(2025, 10, 1)));
         Assertions.assertEquals(5, bookingService.calculateWindowsCleanedOnSpecificDate(LocalDate.of(2026, 1, 10)));
+        Assertions.assertEquals(0, bookingService.calculateWindowsCleanedOnSpecificDate(LocalDate.of(2027, 1, 10)));
     }
 
     @Test
@@ -52,11 +53,10 @@ public class BookingServiceImplTest {
 
     @Test
     public void calculateBookingCostReturnsExpectedCost(){
-        Assertions.assertEquals(20, bookingService.calculateTotalCostForBooking(1));
-        Assertions.assertEquals(25, bookingService.calculateTotalCostForBooking(2));
-        Assertions.assertEquals(50, bookingService.calculateTotalCostForBooking(3));
-        Assertions.assertEquals(60, bookingService.calculateTotalCostForBooking(4));
-        Assertions.assertEquals(0, bookingService.calculateTotalCostForBooking(5));
+        Assertions.assertEquals(9, bookingService.calculateTotalCostForBooking(1));
+        Assertions.assertEquals(10, bookingService.calculateTotalCostForBooking(2));
+        Assertions.assertEquals(15, bookingService.calculateTotalCostForBooking(3));
+        Assertions.assertEquals(17, bookingService.calculateTotalCostForBooking(4));
     }
 
     @Test

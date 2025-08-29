@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class BookingServiceImpl implements BookingService {
 
-    public static final int WINDOW_COST = 5;
+    public static final int COST_PER_PROPERTY = 5;
     public static final String LOCAL_DATE_OBJECT_NAME = "LocalDate";
     public static final String BOOKING_OBJECT_NAME = "Booking";
     public static final String CUSTOMER_OBJECT_NAME = "Customer";
@@ -59,7 +59,7 @@ public class BookingServiceImpl implements BookingService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Booking number not found"));
 
-        return customerMap.get(booking.getCustomerNumber()).getWindows() * WINDOW_COST;
+        return customerMap.get(booking.getCustomerNumber()).getWindows() + COST_PER_PROPERTY;
 
     }
 }
