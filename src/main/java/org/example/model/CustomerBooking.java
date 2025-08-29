@@ -1,8 +1,8 @@
 package org.example.model;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,9 +12,25 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@AllArgsConstructor
 @EqualsAndHashCode
 public class CustomerBooking {
+
+    /**
+     * Constructor for CustomerBooking.
+     *
+     * @param bookingNumber  the booking number
+     * @param customerNumber the customer number
+     * @param bookingDate    the booking date
+     * @param startTime      the start time
+     */
+    public CustomerBooking(int bookingNumber, int customerNumber, LocalDate bookingDate,
+                           LocalTime startTime) {
+        this.bookingNumber = bookingNumber;
+        this.customerNumber = customerNumber;
+        this.bookingDate = bookingDate;
+        this.startTime = startTime;
+    }
+
     /**
      * Booking number.
      */
@@ -26,6 +42,13 @@ public class CustomerBooking {
     /**
      * Booking date.
      */
-    // TODO: handle all date formats as can specify time
     private LocalDate bookingDate;
+    /**
+     * Booking time.
+     */
+    private LocalTime startTime;
+    /**
+     * Duration of the booking.
+     */
+    private LocalTime endTime;
 }

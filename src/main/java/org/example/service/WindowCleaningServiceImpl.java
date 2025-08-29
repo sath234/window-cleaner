@@ -34,12 +34,10 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     /**
      * List of customers.
      */
-    // TODO: just have customer map might be easier
     private final List<Customer> customerList;
     /**
      * List of bookings.
      */
-    // TODO: just have bookings map might be easier
     private final List<CustomerBooking> customerBookingList;
     /**
      * Map of customers by number.
@@ -56,7 +54,7 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     }
 
     @Override
-    public void addCustomer(final Customer customer) {
+    public void addCustomer(Customer customer) {
         ValidationUtil.checkDuplicateObjectInList(customerList, customer);
         ValidationUtil.checkObjectIsNotNull(customer, CUSTOMER_OBJECT_NAME);
 
@@ -70,7 +68,7 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     }
 
     @Override
-    public void addBooking(final CustomerBooking customerBooking) {
+    public void addBooking(CustomerBooking customerBooking) {
         ValidationUtil.checkDuplicateObjectInList(customerBookingList, customerBooking);
         ValidationUtil.checkObjectIsNotNull(customerBooking, BOOKING_OBJECT_NAME);
         ValidationUtil.checkDateNotInPast(customerBooking.getBookingDate());
@@ -84,7 +82,7 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     }
 
     @Override
-    public int calculateWindowsCleanedOnSpecificDate(final LocalDate date) {
+    public int calculateWindowsCleanedOnSpecificDate(LocalDate date) {
         ValidationUtil.checkObjectIsNotNull(date, LOCAL_DATE_OBJECT_NAME);
 
         return customerBookingList.stream()
@@ -95,7 +93,7 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     }
 
     @Override
-    public int calculateTotalCostForBooking(final int bookingNumber) {
+    public int calculateTotalCostForBooking(int bookingNumber) {
         CustomerBooking customerBooking = customerBookingList.stream()
                 .filter(b -> b.getBookingNumber() == bookingNumber)
                 .findFirst()

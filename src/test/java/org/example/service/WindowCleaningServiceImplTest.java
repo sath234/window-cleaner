@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class WindowCleaningServiceImplTest {
     private WindowCleaningServiceImpl windowCleaningService;
@@ -19,10 +20,10 @@ public class WindowCleaningServiceImplTest {
         windowCleaningService.addCustomer(new Customer(3, "Ringo", 12));
         windowCleaningService.addCustomer(new Customer(4, "George", 4));
 
-        windowCleaningService.addBooking(new CustomerBooking(1, 4, LocalDate.of(2025, 10, 1)));
-        windowCleaningService.addBooking(new CustomerBooking(2, 2, LocalDate.of(2026, 1, 10)));
-        windowCleaningService.addBooking(new CustomerBooking(3, 1, LocalDate.of(2025, 10, 1)));
-        windowCleaningService.addBooking(new CustomerBooking(4, 3, LocalDate.of(2025, 10, 1)));
+        windowCleaningService.addBooking(new CustomerBooking(1, 4, LocalDate.of(2025, 10, 1), LocalTime.of(6, 0)));
+        windowCleaningService.addBooking(new CustomerBooking(2, 2, LocalDate.of(2026, 1, 10), LocalTime.of(8, 0)));
+        windowCleaningService.addBooking(new CustomerBooking(3, 1, LocalDate.of(2025, 10, 1), LocalTime.of(10, 0)));
+        windowCleaningService.addBooking(new CustomerBooking(4, 3, LocalDate.of(2025, 10, 1), LocalTime.of(12, 0)));
     }
 
     @Test
@@ -55,7 +56,7 @@ public class WindowCleaningServiceImplTest {
 
     @Test
     public void addBookingAddsBookingToList() {
-        CustomerBooking customerBooking = new CustomerBooking(5, 1, LocalDate.now());
+        CustomerBooking customerBooking = new CustomerBooking(5, 1, LocalDate.now(), LocalTime.of(12, 0));
         windowCleaningService.addBooking(customerBooking);
 
         Assertions.assertTrue(windowCleaningService.retrieveCustomerBookings().contains(customerBooking));
@@ -63,7 +64,7 @@ public class WindowCleaningServiceImplTest {
 
     @Test
     public void addBookingThrowsIllegalArgumentExceptionForDuplicateBooking() {
-        CustomerBooking customerBooking = new CustomerBooking(1, 4, LocalDate.of(2025, 10, 1));
+        CustomerBooking customerBooking = new CustomerBooking(1, 4, LocalDate.of(2025, 10, 1), LocalTime.of(6, 0));
 
         IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
             windowCleaningService.addBooking(customerBooking);
@@ -74,7 +75,7 @@ public class WindowCleaningServiceImplTest {
 
     @Test
     public void addBookingThrowsIllegalArgumentExceptionForBookingInPast() {
-        CustomerBooking customerBooking = new CustomerBooking(5, 1, LocalDate.of(2020, 1, 1));
+        CustomerBooking customerBooking = new CustomerBooking(5, 1, LocalDate.of(2020, 1, 1), LocalTime.of(12, 0));
 
         IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
             windowCleaningService.addBooking(customerBooking);
