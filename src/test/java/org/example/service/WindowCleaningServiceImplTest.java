@@ -5,7 +5,12 @@ import org.example.model.Customer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 public class WindowCleaningServiceImplTest {
     private WindowCleaningServiceImpl windowCleaningService;
@@ -99,13 +104,25 @@ public class WindowCleaningServiceImplTest {
         Assertions.assertEquals("Booking cannot be null", exception.getMessage());
     }
 
-    @Test
-    public void addBookingThrowsExceptionForOverlappingTimes() {
-        CustomerBooking overlappingBooking = new CustomerBooking(5, 1, LocalDateTime.of(2025, 10, 1, 6, 10));
+    static Stream<Arguments> overlapTestCases() {
+        return Stream.of(
+                // Overlapping cases - should throw exception
+                Arguments.of(LocalDateTime.of(2025, 10, 1, 6, 0), "Exact same start time"),
+                Arguments.of(LocalDateTime.of(2025, 10, 1, 6, 10), "Partial overlap - starts during existing"),
+                Arguments.of(LocalDateTime.of(2025, 10, 1, 5, 50), "Partial overlap - ends during existing"),
+                Arguments.of(LocalDateTime.of(2025, 10, 1, 6, 5), "Complete inside existing"),
+                Arguments.of(LocalDateTime.of(2025, 10, 1, 5, 50), "Complete outside existing")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("overlapTestCases")
+    public void addBookingThrowsExceptionForOverlappingTimes(LocalDateTime startTime, String scenario) {
+        CustomerBooking overlappingBooking = new CustomerBooking(5, 1, startTime);
 
         IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
             windowCleaningService.addBooking(overlappingBooking);
-        });
+        }, "Failed scenario: " + scenario);
 
         Assertions.assertEquals("Booking times overlap with existing booking", exception.getMessage());
     }
