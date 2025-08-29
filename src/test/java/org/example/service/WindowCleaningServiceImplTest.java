@@ -5,8 +5,7 @@ import org.example.model.Customer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public class WindowCleaningServiceImplTest {
     private WindowCleaningServiceImpl windowCleaningService;
@@ -20,10 +19,10 @@ public class WindowCleaningServiceImplTest {
         windowCleaningService.addCustomer(new Customer(3, "Ringo", 12));
         windowCleaningService.addCustomer(new Customer(4, "George", 4));
 
-        windowCleaningService.addBooking(new CustomerBooking(1, 4, LocalDate.of(2025, 10, 1), LocalTime.of(6, 0)));
-        windowCleaningService.addBooking(new CustomerBooking(2, 2, LocalDate.of(2026, 1, 10), LocalTime.of(8, 0)));
-        windowCleaningService.addBooking(new CustomerBooking(3, 1, LocalDate.of(2025, 10, 1), LocalTime.of(10, 0)));
-        windowCleaningService.addBooking(new CustomerBooking(4, 3, LocalDate.of(2025, 10, 1), LocalTime.of(12, 0)));
+        windowCleaningService.addBooking(new CustomerBooking(1, 4, LocalDateTime.of(2025, 10, 1, 6, 0)));
+        windowCleaningService.addBooking(new CustomerBooking(2, 2, LocalDateTime.of(2026, 1, 10, 8, 0)));
+        windowCleaningService.addBooking(new CustomerBooking(3, 1, LocalDateTime.of(2025, 10, 1, 10, 0)));
+        windowCleaningService.addBooking(new CustomerBooking(4, 3, LocalDateTime.of(2025, 10, 1, 12, 0)));
     }
 
     @Test
@@ -54,17 +53,26 @@ public class WindowCleaningServiceImplTest {
         Assertions.assertEquals("Customer cannot be null", exception.getMessage());
     }
 
+
+
     @Test
     public void addBookingAddsBookingToList() {
-        CustomerBooking customerBooking = new CustomerBooking(5, 1, LocalDate.now(), LocalTime.of(12, 0));
+        CustomerBooking customerBooking = new CustomerBooking(5, 1, LocalDateTime.of(2025, 12, 11, 12, 50));
         windowCleaningService.addBooking(customerBooking);
 
         Assertions.assertTrue(windowCleaningService.retrieveCustomerBookings().contains(customerBooking));
+
+        CustomerBooking customerBookingJustAdded = windowCleaningService.retrieveCustomerBookings().get(
+                windowCleaningService.retrieveCustomerBookings().size() - 1
+        );
+
+        LocalDateTime expectedEndTime = customerBooking.getScheduledStart().plusMinutes(50); // 10 windows * 5 minutes
+        Assertions.assertEquals(expectedEndTime, customerBookingJustAdded.getScheduledEnd());
     }
 
     @Test
     public void addBookingThrowsIllegalArgumentExceptionForDuplicateBooking() {
-        CustomerBooking customerBooking = new CustomerBooking(1, 4, LocalDate.of(2025, 10, 1), LocalTime.of(6, 0));
+        CustomerBooking customerBooking = new CustomerBooking(1, 4, LocalDateTime.of(2025, 10, 1, 6, 0));
 
         IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
             windowCleaningService.addBooking(customerBooking);
@@ -75,7 +83,7 @@ public class WindowCleaningServiceImplTest {
 
     @Test
     public void addBookingThrowsIllegalArgumentExceptionForBookingInPast() {
-        CustomerBooking customerBooking = new CustomerBooking(5, 1, LocalDate.of(2020, 1, 1), LocalTime.of(12, 0));
+        CustomerBooking customerBooking = new CustomerBooking(5, 1, LocalDateTime.of(2020, 1, 1, 12, 0));
 
         IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
             windowCleaningService.addBooking(customerBooking);
@@ -105,9 +113,9 @@ public class WindowCleaningServiceImplTest {
 
     @Test
     public void calculateWindowsCleanedReturnsExpectedCount(){
-        Assertions.assertEquals(26, windowCleaningService.calculateWindowsCleanedOnSpecificDate(LocalDate.of(2025, 10, 1)));
-        Assertions.assertEquals(5, windowCleaningService.calculateWindowsCleanedOnSpecificDate(LocalDate.of(2026, 1, 10)));
-        Assertions.assertEquals(0, windowCleaningService.calculateWindowsCleanedOnSpecificDate(LocalDate.of(2027, 1, 10)));
+        Assertions.assertEquals(26, windowCleaningService.calculateWindowsCleanedOnSpecificDate(LocalDateTime.of(2025, 10, 1, 0, 0)));
+        Assertions.assertEquals(5, windowCleaningService.calculateWindowsCleanedOnSpecificDate(LocalDateTime.of(2026, 1, 10, 0, 0)));
+        Assertions.assertEquals(0, windowCleaningService.calculateWindowsCleanedOnSpecificDate(LocalDateTime.of(2027, 1, 10, 0, 0)));
     }
 
     @Test
@@ -116,7 +124,7 @@ public class WindowCleaningServiceImplTest {
             windowCleaningService.calculateWindowsCleanedOnSpecificDate(null);
         });
 
-        Assertions.assertEquals("LocalDate cannot be null", nullPointerException.getMessage());
+        Assertions.assertEquals("LocalDateTime cannot be null", nullPointerException.getMessage());
     }
 
     @Test

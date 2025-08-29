@@ -1,7 +1,6 @@
 package org.example.model;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -20,15 +19,12 @@ public class CustomerBooking {
      *
      * @param bookingNumber  the booking number
      * @param customerNumber the customer number
-     * @param bookingDate    the booking date
-     * @param startTime      the start time
+     * @param scheduledStart the scheduled start date and time
      */
-    public CustomerBooking(int bookingNumber, int customerNumber, LocalDate bookingDate,
-                           LocalTime startTime) {
+    public CustomerBooking(int bookingNumber, int customerNumber, LocalDateTime scheduledStart) {
         this.bookingNumber = bookingNumber;
         this.customerNumber = customerNumber;
-        this.bookingDate = bookingDate;
-        this.startTime = startTime;
+        this.scheduledStart = scheduledStart;
     }
 
     /**
@@ -40,15 +36,11 @@ public class CustomerBooking {
      */
     private final int customerNumber;
     /**
-     * Booking date.
+     * Scheduled start date and time.
      */
-    private LocalDate bookingDate;
+    private LocalDateTime scheduledStart;
     /**
-     * Booking time.
+     * Scheduled end date and time.
      */
-    private LocalTime startTime;
-    /**
-     * Duration of the booking.
-     */
-    private LocalTime endTime;
+    private LocalDateTime scheduledEnd;
 }

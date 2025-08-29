@@ -8,7 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -16,7 +16,8 @@ public class ValidationUtilTest {
 
     static Stream<Arguments> duplicateObjectTestCases() {
         Customer duplicateCustomer = new Customer(1, "Nathan", 5);
-        CustomerBooking duplicateCustomerBooking = new CustomerBooking(1, 1, LocalDate.now(), LocalTime.of(13, 0));
+        LocalDateTime testDateTime = LocalDateTime.of(2025, 1, 1, 13, 0);
+        CustomerBooking duplicateCustomerBooking = new CustomerBooking(1, 1, testDateTime);
 
         return Stream.of(
                 Arguments.of(
@@ -25,7 +26,7 @@ public class ValidationUtilTest {
                         "Duplicate Customer not allowed"
                 ),
                 Arguments.of(
-                        List.of(new CustomerBooking(1, 1, LocalDate.now(), LocalTime.of(13, 0))),
+                        List.of(new CustomerBooking(1, 1, testDateTime)),
                         duplicateCustomerBooking,
                         "Duplicate CustomerBooking not allowed"
                 )
@@ -49,8 +50,8 @@ public class ValidationUtilTest {
                         new Customer(2, "John", 3)
                 ),
                 Arguments.of(
-                        List.of(new CustomerBooking(1, 1, LocalDate.now(), LocalTime.now())),
-                        new CustomerBooking(2, 2, LocalDate.now().plusDays(1), LocalTime.now())
+                        List.of(new CustomerBooking(1, 1, LocalDateTime.of(2025, 1, 1, 10, 0))),
+                        new CustomerBooking(2, 2, LocalDateTime.of(2025, 1, 2, 10, 0))
                 ),
                 Arguments.of(
                         List.of(),
@@ -87,7 +88,7 @@ public class ValidationUtilTest {
     static Stream<Arguments> validObjectTestCases() {
         return Stream.of(
                 Arguments.of(new Customer(1, "Nathan", 5), "Customer"),
-                Arguments.of(new CustomerBooking(1, 1, LocalDate.now(), LocalTime.now()), "Booking")
+                Arguments.of(new CustomerBooking(1, 1, LocalDateTime.of(2025, 1, 1, 10, 0)), "Booking")
         );
     }
 

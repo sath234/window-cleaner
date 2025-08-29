@@ -1,6 +1,7 @@
 package org.example.utils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,6 +49,18 @@ public final class ValidationUtil {
      */
     public static void checkDateNotInPast(final LocalDate date) {
         if (date != null && date.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                    "Booking date cannot be in the past");
+        }
+    }
+
+    /**
+     * Checks if the date and time is not in the past.
+     *
+     * @param dateTime the date and time to check
+     */
+    public static void checkDateTimeNotInPast(final LocalDateTime dateTime) {
+        if (dateTime != null && dateTime.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException(
                     "Booking date cannot be in the past");
         }
