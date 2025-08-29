@@ -13,21 +13,17 @@ public class BookingServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        List<Customer> customersList = List.of(
-                new Customer(1, "John", 10),
-                new Customer(2, "Paul", 5),
-                new Customer(3, "Ringo", 12),
-                new Customer(4, "George", 4)
-        );
+        bookingService = new BookingServiceImpl();
 
-        List<Booking> bookingList = List.of(
-                new Booking(1, 4, LocalDate.of(2025, 10, 1)),
-                new Booking(2, 2, LocalDate.of(2026, 1, 10)),
-                new Booking(3, 1, LocalDate.of(2025, 10, 1)),
-                new Booking(4, 3, LocalDate.of(2025, 10, 1))
-        );
+        bookingService.addCustomer(new Customer(1, "John", 10));
+        bookingService.addCustomer(new Customer(2, "Paul", 5));
+        bookingService.addCustomer(new Customer(3, "Ringo", 12));
+        bookingService.addCustomer(new Customer(4, "George", 4));
 
-        bookingService = new BookingServiceImpl(customersList, bookingList);
+        bookingService.addBooking(new Booking(1, 4, LocalDate.of(2025, 10, 1)));
+        bookingService.addBooking(new Booking(2, 2, LocalDate.of(2026, 1, 10)));
+        bookingService.addBooking(new Booking(3, 1, LocalDate.of(2025, 10, 1)));
+        bookingService.addBooking(new Booking(4, 3, LocalDate.of(2025, 10, 1)));
     }
 
     @Test

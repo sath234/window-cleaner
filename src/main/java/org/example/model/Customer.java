@@ -13,10 +13,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class Customer {
-    /** Customer number. */
+    /**
+     * Customer number.
+     */
     private final int customerNumber;
-    /** Customer name. */
+    /**
+     * Customer name.
+     */
     private String name;
-    /** Number of windows. */
+    /**
+     * Number of windows.
+     */
     private int windows;
 }
