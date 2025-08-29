@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @EqualsAndHashCode
-public class Booking {
+public class CustomerBooking {
     /**
      * Booking number.
      */

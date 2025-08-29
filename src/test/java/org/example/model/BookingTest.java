@@ -10,24 +10,24 @@ public class BookingTest {
     @Test
     public void canFetchBookingFields(){
         LocalDate date = LocalDate.of(2020, 1, 1);
-        Booking booking = new Booking(1, 1, date);
+        CustomerBooking customerBooking = new CustomerBooking(1, 1, date);
 
-        Assertions.assertEquals(1, booking.getBookingNumber());
-        Assertions.assertEquals(1, booking.getCustomerNumber());
-        Assertions.assertEquals(date, booking.getBookingDate());
+        Assertions.assertEquals(1, customerBooking.getBookingNumber());
+        Assertions.assertEquals(1, customerBooking.getCustomerNumber());
+        Assertions.assertEquals(date, customerBooking.getBookingDate());
     }
 
     @Test
     public void canSetNonFinalBookingFields(){
         LocalDate date = LocalDate.of(2020, 1, 1);
-        Booking booking = new Booking(1, 1, date);
+        CustomerBooking customerBooking = new CustomerBooking(1, 1, date);
 
         LocalDate date2 = LocalDate.of(2020, 1, 2);
 
-        booking.setBookingDate(date2);
+        customerBooking.setBookingDate(date2);
 
-        Assertions.assertEquals(1, booking.getBookingNumber());
-        Assertions.assertEquals(1, booking.getCustomerNumber());
-        Assertions.assertEquals(date2, booking.getBookingDate());
+        Assertions.assertEquals(1, customerBooking.getBookingNumber());
+        Assertions.assertEquals(1, customerBooking.getCustomerNumber());
+        Assertions.assertEquals(date2, customerBooking.getBookingDate());
     }
 }

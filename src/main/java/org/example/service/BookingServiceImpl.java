@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.example.model.Booking;
+import org.example.model.CustomerBooking;
 import org.example.model.Customer;
 import org.example.utils.ValidationUtil;
 
@@ -40,7 +40,7 @@ public final class BookingServiceImpl implements BookingService {
      * List of bookings.
      */
     // TODO: just have bookings map might be easier
-    private final List<Booking> bookingList;
+    private final List<CustomerBooking> customerBookingList;
     /**
      * Map of customers by number.
      */
@@ -51,7 +51,7 @@ public final class BookingServiceImpl implements BookingService {
      */
     public BookingServiceImpl() {
         this.customerList = new ArrayList<>();
-        this.bookingList = new ArrayList<>();
+        this.customerBookingList = new ArrayList<>();
         this.customerMap = new HashMap<>();
     }
 
@@ -65,19 +65,29 @@ public final class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public void addBooking(Booking booking) {
-        ValidationUtil.checkDuplicateObjectInList(bookingList, booking);
-        ValidationUtil.checkObjectIsNotNull(booking, BOOKING_OBJECT_NAME);
-        ValidationUtil.checkDateNotInPast(booking.getBookingDate());
+    public List<Customer> retrieveCustomers() {
+        return customerList;
+    }
 
-        bookingList.add(booking);
+    @Override
+    public void addBooking(final CustomerBooking customerBooking) {
+        ValidationUtil.checkDuplicateObjectInList(customerBookingList, customerBooking);
+        ValidationUtil.checkObjectIsNotNull(customerBooking, BOOKING_OBJECT_NAME);
+        ValidationUtil.checkDateNotInPast(customerBooking.getBookingDate());
+
+        customerBookingList.add(customerBooking);
+    }
+
+    @Override
+    public List<CustomerBooking> retrieveCustomerBookings() {
+        return customerBookingList;
     }
 
     @Override
     public int calculateWindowsCleanedOnSpecificDate(final LocalDate date) {
         ValidationUtil.checkObjectIsNotNull(date, LOCAL_DATE_OBJECT_NAME);
 
-        return bookingList.stream()
+        return customerBookingList.stream()
                 .filter(booking -> booking.getBookingDate().equals(date))
                 .mapToInt(booking -> customerMap.get(
                         booking.getCustomerNumber()).getWindows())
@@ -86,13 +96,13 @@ public final class BookingServiceImpl implements BookingService {
 
     @Override
     public int calculateTotalCostForBooking(final int bookingNumber) {
-        Booking booking = bookingList.stream()
+        CustomerBooking customerBooking = customerBookingList.stream()
                 .filter(b -> b.getBookingNumber() == bookingNumber)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Booking number not found"));
 
-        return customerMap.get(booking.getCustomerNumber()).getWindows()
+        return customerMap.get(customerBooking.getCustomerNumber()).getWindows()
                 + COST_PER_PROPERTY;
     }
 }

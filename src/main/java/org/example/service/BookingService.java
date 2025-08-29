@@ -1,9 +1,10 @@
 package org.example.service;
 
-import org.example.model.Booking;
+import org.example.model.CustomerBooking;
 import org.example.model.Customer;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Booking service interface.
@@ -17,11 +18,25 @@ public interface BookingService {
     void addCustomer(Customer customer);
 
     /**
+     * Retrieves all customers.
+     *
+     * @return list of customers
+     */
+    List<Customer> retrieveCustomers();
+
+    /**
      * Adds a booking to the service.
      *
-     * @param booking the booking to add
+     * @param customerBooking the booking to add
      */
-    void addBooking(Booking booking);
+    void addBooking(CustomerBooking customerBooking);
+
+    /**
+     * Retrieves all bookings.
+     *
+     * @return list of CustomerBookings
+     */
+    List<CustomerBooking> retrieveCustomerBookings();
 
     /**
      * Calculates windows cleaned on specific date.

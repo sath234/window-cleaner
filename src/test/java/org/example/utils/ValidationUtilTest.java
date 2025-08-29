@@ -1,6 +1,6 @@
 package org.example.utils;
 
-import org.example.model.Booking;
+import org.example.model.CustomerBooking;
 import org.example.model.Customer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,7 +15,7 @@ public class ValidationUtilTest {
 
     static Stream<Arguments> duplicateObjectTestCases() {
         Customer duplicateCustomer = new Customer(1, "Nathan", 5);
-        Booking duplicateBooking = new Booking(1, 1, LocalDate.now());
+        CustomerBooking duplicateCustomerBooking = new CustomerBooking(1, 1, LocalDate.now());
 
         return Stream.of(
                 Arguments.of(
@@ -24,9 +24,9 @@ public class ValidationUtilTest {
                         "Duplicate Customer not allowed"
                 ),
                 Arguments.of(
-                        List.of(new Booking(1, 1, LocalDate.now())),
-                        duplicateBooking,
-                        "Duplicate Booking not allowed"
+                        List.of(new CustomerBooking(1, 1, LocalDate.now())),
+                        duplicateCustomerBooking,
+                        "Duplicate CustomerBooking not allowed"
                 )
         );
     }
@@ -48,8 +48,8 @@ public class ValidationUtilTest {
                         new Customer(2, "John", 3)
                 ),
                 Arguments.of(
-                        List.of(new Booking(1, 1, LocalDate.now())),
-                        new Booking(2, 2, LocalDate.now().plusDays(1))
+                        List.of(new CustomerBooking(1, 1, LocalDate.now())),
+                        new CustomerBooking(2, 2, LocalDate.now().plusDays(1))
                 ),
                 Arguments.of(
                         List.of(),
@@ -86,7 +86,7 @@ public class ValidationUtilTest {
     static Stream<Arguments> validObjectTestCases() {
         return Stream.of(
                 Arguments.of(new Customer(1, "Nathan", 5), "Customer"),
-                Arguments.of(new Booking(1, 1, LocalDate.now()), "Booking")
+                Arguments.of(new CustomerBooking(1, 1, LocalDate.now()), "Booking")
         );
     }
 
