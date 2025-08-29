@@ -13,7 +13,7 @@ import org.example.utils.ValidationUtil;
 /**
  * Implementation of BookingService.
  */
-public final class BookingServiceImpl implements BookingService {
+public final class WindowCleaningServiceImpl implements WindowCleaningService {
 
     /**
      * Cost per property.
@@ -49,7 +49,7 @@ public final class BookingServiceImpl implements BookingService {
     /**
      * Constructor for BookingServiceImpl.
      */
-    public BookingServiceImpl() {
+    public WindowCleaningServiceImpl() {
         this.customerList = new ArrayList<>();
         this.customerBookingList = new ArrayList<>();
         this.customerMap = new HashMap<>();

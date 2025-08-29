@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Booking service interface.
  */
-public interface BookingService {
+public interface WindowCleaningService {
     /**
      * Adds a customer to the service
      *
