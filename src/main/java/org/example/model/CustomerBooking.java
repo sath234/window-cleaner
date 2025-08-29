@@ -43,4 +43,9 @@ public class CustomerBooking {
      * Scheduled end date and time.
      */
     private LocalDateTime scheduledEnd;
+
+    public void calculateEndTimeBooking(int windows) {
+        // 5L is how long each window takes to clean in minutes
+        scheduledEnd = this.scheduledStart.plusMinutes(5L * windows);
+    }
 }

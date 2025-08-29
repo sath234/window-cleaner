@@ -53,8 +53,6 @@ public class WindowCleaningServiceImplTest {
         Assertions.assertEquals("Customer cannot be null", exception.getMessage());
     }
 
-
-
     @Test
     public void addBookingAddsBookingToList() {
         CustomerBooking customerBooking = new CustomerBooking(5, 1, LocalDateTime.of(2025, 12, 11, 12, 50));
@@ -99,6 +97,17 @@ public class WindowCleaningServiceImplTest {
         });
 
         Assertions.assertEquals("Booking cannot be null", exception.getMessage());
+    }
+
+    @Test
+    public void addBookingThrowsExceptionForOverlappingTimes() {
+        CustomerBooking overlappingBooking = new CustomerBooking(5, 1, LocalDateTime.of(2025, 10, 1, 6, 10));
+
+        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            windowCleaningService.addBooking(overlappingBooking);
+        });
+
+        Assertions.assertEquals("Booking times overlap with existing booking", exception.getMessage());
     }
 
     @Test

@@ -20,10 +20,6 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
      */
     public static final int COST_PER_PROPERTY = 5;
     /**
-     * Time taken clean a window.
-     */
-    private static final long TIME_CLEAN_WINDOW = 5;
-    /**
      * LocalDateTime object name.
      */
     private static final String LOCAL_DATE_TIME_OBJECT_NAME = "LocalDateTime";
@@ -77,9 +73,11 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
         ValidationUtil.checkDateTimeNotInPast(customerBooking.getScheduledStart());
 
         // Need to add calculate endTime first otherwise duplicate check will always pass
-        calculateEndTimeBooking(customerBooking);
+        customerBooking.calculateEndTimeBooking(customerMap.get(customerBooking.getCustomerNumber()).getWindows());
 
         ValidationUtil.checkDuplicateObjectInList(customerBookingList, customerBooking);
+
+        checkForTimeOverlap(customerBooking);
 
         customerBookingList.add(customerBooking);
     }
@@ -112,11 +110,17 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
                 + COST_PER_PROPERTY;
     }
 
-    private void calculateEndTimeBooking(CustomerBooking customerBooking) {
-        int windows = customerMap.get(customerBooking.getCustomerNumber())
-                .getWindows();
+    private void checkForTimeOverlap(CustomerBooking newBooking) {
+        boolean hasOverlap = customerBookingList.stream()
+                .anyMatch(existing -> bookingsOverlap(existing, newBooking));
 
-        LocalDateTime endTime = customerBooking.getScheduledStart().plusMinutes(TIME_CLEAN_WINDOW * windows);
-        customerBooking.setScheduledEnd(endTime);
+        if (hasOverlap) {
+            throw new IllegalArgumentException("Booking times overlap with existing booking");
+        }
+    }
+
+    private boolean bookingsOverlap(CustomerBooking existingBooking, CustomerBooking newBooking) {
+        return existingBooking.getScheduledStart().isBefore(newBooking.getScheduledEnd()) &&
+                newBooking.getScheduledStart().isBefore(existingBooking.getScheduledEnd());
     }
 }
