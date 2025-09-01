@@ -26,6 +26,5 @@ public class CustomerBooking {
     /**
      * Booking date.
      */
-    // TODO: handle all date formats as can specify time
     private LocalDate bookingDate;
 }
