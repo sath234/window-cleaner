@@ -3,31 +3,34 @@ package org.example.model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class BookingTest {
 
     @Test
     public void canFetchBookingFields(){
-        LocalDateTime dateTime = LocalDateTime.of(2020, 1, 1, 12, 0);
-        CustomerBooking customerBooking = new CustomerBooking(1, 1, dateTime);
+        LocalDate date = LocalDate.of(2020, 1, 1);
+        LocalTime time = LocalTime.of(12, 0);
+        CustomerBooking customerBooking = new CustomerBooking(1, 1, date, time);
 
         Assertions.assertEquals(1, customerBooking.getBookingNumber());
         Assertions.assertEquals(1, customerBooking.getCustomerNumber());
-        Assertions.assertEquals(dateTime, customerBooking.getScheduledStart());
+        Assertions.assertEquals(date, customerBooking.getBookingDate());
     }
 
     @Test
     public void canSetNonFinalBookingFields(){
-        LocalDateTime dateTime = LocalDateTime.of(2020, 1, 1, 12, 0);
-        CustomerBooking customerBooking = new CustomerBooking(1, 1, dateTime);
+        LocalDate date = LocalDate.of(2020, 1, 1);
+        LocalTime time = LocalTime.of(12, 0);
+        CustomerBooking customerBooking = new CustomerBooking(1, 1, date, time);
 
-        LocalDateTime dateTime2 = LocalDateTime.of(2020, 1, 2, 14, 30);
+        LocalDate date2 = LocalDate.of(2020, 1, 2);
 
-        customerBooking.setScheduledStart(dateTime2);
+        customerBooking.setBookingDate(date2);
 
         Assertions.assertEquals(1, customerBooking.getBookingNumber());
         Assertions.assertEquals(1, customerBooking.getCustomerNumber());
-        Assertions.assertEquals(dateTime2, customerBooking.getScheduledStart());
+        Assertions.assertEquals(date2, customerBooking.getBookingDate());
     }
 }

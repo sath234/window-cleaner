@@ -3,7 +3,7 @@ package org.example.service;
 import org.example.model.CustomerBooking;
 import org.example.model.Customer;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -41,10 +41,10 @@ public interface WindowCleaningService {
     /**
      * Calculates windows cleaned on specific date.
      *
-     * @param dateTime the date and time to check
+     * @param date the date to check
      * @return number of windows cleaned
      */
-    int calculateWindowsCleanedOnSpecificDate(LocalDateTime dateTime);
+    int calculateWindowsCleanedOnSpecificDate(LocalDate date);
 
     /**
      * Calculates total cost for booking.

@@ -1,6 +1,6 @@
 package org.example.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,21 +20,17 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
      */
     public static final int COST_PER_PROPERTY = 5;
     /**
-     * Time taken clean a window.
+     * LocalDate object name.
      */
-    private static final long TIME_CLEAN_WINDOW = 5;
-    /**
-     * LocalDateTime object name.
-     */
-    private static final String LOCAL_DATE_TIME_OBJECT_NAME = "LocalDateTime";
+    public static final String LOCAL_DATE_OBJECT_NAME = "LocalDate";
     /**
      * Booking object name.
      */
-    private static final String BOOKING_OBJECT_NAME = "Booking";
+    public static final String BOOKING_OBJECT_NAME = "Booking";
     /**
      * Customer object name.
      */
-    private static final String CUSTOMER_OBJECT_NAME = "Customer";
+    public static final String CUSTOMER_OBJECT_NAME = "Customer";
     /**
      * List of customers.
      */
@@ -73,13 +69,9 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
 
     @Override
     public void addBooking(CustomerBooking customerBooking) {
-        ValidationUtil.checkObjectIsNotNull(customerBooking, BOOKING_OBJECT_NAME);
-        ValidationUtil.checkDateTimeNotInPast(customerBooking.getScheduledStart());
-
-        // Need to add calculate endTime first otherwise duplicate check will always pass
-        calculateEndTimeBooking(customerBooking);
-
         ValidationUtil.checkDuplicateObjectInList(customerBookingList, customerBooking);
+        ValidationUtil.checkObjectIsNotNull(customerBooking, BOOKING_OBJECT_NAME);
+        ValidationUtil.checkDateNotInPast(customerBooking.getBookingDate());
 
         customerBookingList.add(customerBooking);
     }
@@ -90,11 +82,11 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     }
 
     @Override
-    public int calculateWindowsCleanedOnSpecificDate(LocalDateTime dateTime) {
-        ValidationUtil.checkObjectIsNotNull(dateTime, LOCAL_DATE_TIME_OBJECT_NAME);
+    public int calculateWindowsCleanedOnSpecificDate(LocalDate date) {
+        ValidationUtil.checkObjectIsNotNull(date, LOCAL_DATE_OBJECT_NAME);
 
         return customerBookingList.stream()
-                .filter(booking -> booking.getScheduledStart().toLocalDate().equals(dateTime.toLocalDate()))
+                .filter(booking -> booking.getBookingDate().equals(date))
                 .mapToInt(booking -> customerMap.get(
                         booking.getCustomerNumber()).getWindows())
                 .sum();
@@ -110,13 +102,5 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
 
         return customerMap.get(customerBooking.getCustomerNumber()).getWindows()
                 + COST_PER_PROPERTY;
-    }
-
-    private void calculateEndTimeBooking(CustomerBooking customerBooking) {
-        int windows = customerMap.get(customerBooking.getCustomerNumber())
-                .getWindows();
-
-        LocalDateTime endTime = customerBooking.getScheduledStart().plusMinutes(TIME_CLEAN_WINDOW * windows);
-        customerBooking.setScheduledEnd(endTime);
     }
 }
