@@ -34,12 +34,10 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     /**
      * List of customers.
      */
-    // TODO: just have customer map might be easier
     private final List<Customer> customerList;
     /**
      * List of bookings.
      */
-    // TODO: just have bookings map might be easier
     private final List<CustomerBooking> customerBookingList;
     /**
      * Map of customers by number.
