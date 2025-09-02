@@ -8,24 +8,25 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class ValidationUtilTest {
 
     static Stream<Arguments> duplicateObjectTestCases() {
-        Customer duplicateCustomer = new Customer(1, "Nathan", 5);
         CustomerBooking duplicateCustomerBooking = new CustomerBooking(1, 1, LocalDate.now());
 
         return Stream.of(
                 Arguments.of(
-                        List.of(new Customer(1, "Nathan", 5)),
-                        duplicateCustomer,
+                        Map.of(1, new Customer(1, "Nathan", 5)),
+                        1,
+                        "Customer",
                         "Duplicate Customer not allowed"
                 ),
                 Arguments.of(
-                        List.of(new CustomerBooking(1, 1, LocalDate.now())),
-                        duplicateCustomerBooking,
+                        Map.of(1, new CustomerBooking(1, 1, LocalDate.now())),
+                        1,
+                        "CustomerBooking",
                         "Duplicate CustomerBooking not allowed"
                 )
         );
@@ -33,9 +34,9 @@ public class ValidationUtilTest {
 
     @ParameterizedTest
     @MethodSource("duplicateObjectTestCases")
-    public void checkDuplicateObjectInListThrowsException(List list, Object object, String expectedMessage) {
+    public void checkDuplicateObjectInListThrowsException(Map<Integer, Object> map, int key, String objectName, String expectedMessage) {
         IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ValidationUtil.checkDuplicateObjectInList(list, object);
+            ValidationUtil.checkDuplicateKeyInMap(map, key, objectName);
         });
         
         Assertions.assertEquals(expectedMessage, exception.getMessage());
@@ -44,25 +45,29 @@ public class ValidationUtilTest {
     static Stream<Arguments> uniqueObjectTestCases() {
         return Stream.of(
                 Arguments.of(
-                        List.of(new Customer(1, "Nathan", 5)),
-                        new Customer(2, "John", 3)
+                        Map.of(1, new Customer(1, "Nathan", 5)),
+                        2,
+                        "Customer"
                 ),
                 Arguments.of(
-                        List.of(new CustomerBooking(1, 1, LocalDate.now())),
-                        new CustomerBooking(2, 2, LocalDate.now().plusDays(1))
+                        Map.of(1, new CustomerBooking(1, 1, LocalDate.now())),
+                        2,
+                        "CustomerBooking"
                 ),
                 Arguments.of(
-                        List.of(),
-                        new Customer(1, "Nathan", 5) // Empty list
+                        Map.of(),
+                        1,
+                        "Test"
+
                 )
         );
     }
 
     @ParameterizedTest
     @MethodSource("uniqueObjectTestCases")
-    public void checkDuplicateObjectInListDoesNotThrow(List list, Object object) {
+    public void checkDuplicateObjectInListDoesNotThrow(Map<Integer, Object> map, int key, String objectName) {
         Assertions.assertDoesNotThrow(() -> {
-            ValidationUtil.checkDuplicateObjectInList(list, object);
+            ValidationUtil.checkDuplicateKeyInMap(map, key, objectName);
         });
     }
 

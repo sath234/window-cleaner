@@ -42,8 +42,8 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
      * Constructor.
      */
     public WindowCleaningServiceImpl() {
-        this.customerBookings = new HashMap<Integer, CustomerBooking>();
-        this.customers = new HashMap<Integer, Customer>();
+        this.customerBookings = new HashMap<>();
+        this.customers = new HashMap<>();
     }
 
     @Override

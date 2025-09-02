@@ -11,21 +11,6 @@ import java.util.Objects;
 public final class ValidationUtil {
 
     /**
-     * Checks if an object is already present in the list.
-     *
-     * @param <T>    the type of object
-     * @param list   the list to check
-     * @param object the object to check for
-     */
-    public static <T> void checkDuplicateObjectInList(final List<T> list,
-                                                      final T object) {
-        if (list.contains(object)) {
-            throw new IllegalArgumentException("Duplicate "
-                    + object.getClass().getSimpleName() + " not allowed");
-        }
-    }
-
-    /**
      * Checks if an object is already present in the HashMap.
      *
      * @param <T>        the type of object
@@ -33,7 +18,7 @@ public final class ValidationUtil {
      * @param key        the key to check for
      * @param errorMessage the error message for the object type
      */
-    public static <T> void checkDuplicateKeyInMap(final Map<Integer, T> map,
+    public static <T> void checkDuplicateKeyInMap(Map<Integer, T> map,
                                                          int key, String errorMessage) {
         if (map.containsKey(key)) {
             throw new IllegalArgumentException("Duplicate "
