@@ -2,6 +2,7 @@ package org.example.utils;
 
 import org.example.model.CustomerBooking;
 import org.example.model.Customer;
+import org.example.model.Status;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

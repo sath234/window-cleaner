@@ -12,9 +12,15 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@AllArgsConstructor
 @EqualsAndHashCode
 public class CustomerBooking {
+
+    public CustomerBooking(int bookingNumber, int customerNumber, LocalDate bookingDate) {
+        this.bookingNumber = bookingNumber;
+        this.customerNumber = customerNumber;
+        this.bookingDate = bookingDate;
+    }
+
     /**
      * Booking number.
      */
@@ -27,4 +33,8 @@ public class CustomerBooking {
      * Booking date.
      */
     private LocalDate bookingDate;
+    /**
+     * Booking status.
+     */
+    private Status status;
 }

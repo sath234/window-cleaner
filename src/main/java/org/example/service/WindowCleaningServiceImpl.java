@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.example.model.CustomerBooking;
 import org.example.model.Customer;
+import org.example.model.Status;
 import org.example.utils.ValidationUtil;
 
 /**
@@ -69,9 +70,15 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
 
     @Override
     public void addBooking(final CustomerBooking customerBooking) {
-        ValidationUtil.checkDuplicateObjectInList(customerBookingList, customerBooking);
         ValidationUtil.checkObjectIsNotNull(customerBooking, BOOKING_OBJECT_NAME);
         ValidationUtil.checkDateNotInPast(customerBooking.getBookingDate());
+
+        // set the schedule here so consistent status for all new bookings
+        customerBooking.setStatus(Status.SCHEDULED);
+
+        // Have to check for duplicates after set status otherwise
+        // equals and hashcode will not work as expected
+        ValidationUtil.checkDuplicateObjectInList(customerBookingList, customerBooking);
 
         customerBookingList.add(customerBooking);
     }
@@ -79,6 +86,15 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     @Override
     public List<CustomerBooking> retrieveCustomerBookings() {
         return customerBookingList;
+    }
+
+    @Override
+    public List<CustomerBooking> retrieveCustomerBookings(LocalDate date) {
+        ValidationUtil.checkObjectIsNotNull(date, LOCAL_DATE_OBJECT_NAME);
+
+        return customerBookingList.stream()
+                .filter(b -> b.getBookingDate().equals(date))
+                .toList();
     }
 
     @Override
@@ -93,6 +109,18 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     }
 
     @Override
+    public int calculateWindowsCleanedSpecificDateRange(LocalDate startDate, LocalDate endDate) {
+        ValidationUtil.checkObjectIsNotNull(startDate, "Start " + LOCAL_DATE_OBJECT_NAME);
+        ValidationUtil.checkObjectIsNotNull(endDate, "End " + LOCAL_DATE_OBJECT_NAME);
+
+        return customerBookingList.stream()
+                .filter(b -> (!b.getBookingDate().isAfter(endDate) &&
+                        !b.getBookingDate().isBefore(startDate)))
+                .mapToInt(b -> customerMap.get(b.getCustomerNumber()).getWindows())
+                .sum();
+    }
+
+    @Override
     public int calculateTotalCostForBooking(final int bookingNumber) {
         CustomerBooking customerBooking = customerBookingList.stream()
                 .filter(b -> b.getBookingNumber() == bookingNumber)
@@ -102,5 +130,50 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
 
         return customerMap.get(customerBooking.getCustomerNumber()).getWindows()
                 + COST_PER_PROPERTY;
+    }
+
+    @Override
+    public int calculateTotalRevenueForDate(LocalDate date) {
+        ValidationUtil.checkObjectIsNotNull(date, LOCAL_DATE_OBJECT_NAME);
+
+        return customerBookingList.stream()
+                .filter(b -> b.getBookingDate().equals(date))
+                .mapToInt(b -> calculateTotalCostForBooking(b.getBookingNumber()))
+                .sum();
+    }
+
+    @Override
+    public int calculateTotalRevenueForDateRange(LocalDate startDate, LocalDate endDate) {
+        ValidationUtil.checkObjectIsNotNull(startDate, "Start " + LOCAL_DATE_OBJECT_NAME);
+        ValidationUtil.checkObjectIsNotNull(endDate, "End " + LOCAL_DATE_OBJECT_NAME);
+
+        return customerBookingList.stream()
+                .filter(b -> (!b.getBookingDate().isAfter(endDate) &&
+                        !b.getBookingDate().isBefore(startDate)))
+                .mapToInt(b -> customerMap.get(b.getCustomerNumber())
+                        .getWindows() + COST_PER_PROPERTY)
+                .sum();
+    }
+
+    @Override
+    public void updateBookingStatus(int bookingNumber, Status status) {
+        ValidationUtil.checkObjectIsNotNull(status, "Status");
+
+        CustomerBooking customerBooking = customerBookingList.stream()
+                .filter(b -> b.getBookingNumber() == bookingNumber)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Booking number not found"));
+
+        if (customerBooking.getBookingDate().isAfter(LocalDate.now()) && status == Status.COMPLETED) {
+            throw new IllegalArgumentException("Cannot complete future booking");
+        }
+        if (customerBooking.getStatus() == status) {
+            throw new IllegalArgumentException("Status is already " + status);
+        }
+        if (customerBooking.getStatus() == Status.COMPLETED) {
+            throw new IllegalArgumentException("Cannot modify completed booking");
+        }
+        customerBooking.setStatus(status);
     }
 }
