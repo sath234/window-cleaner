@@ -2,10 +2,12 @@ package org.example.service;
 
 import org.example.model.CustomerBooking;
 import org.example.model.Customer;
+import org.example.model.Status;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
+import java.util.List;
 
 public class WindowCleaningServiceImplTest {
     private WindowCleaningServiceImpl windowCleaningService;
@@ -120,18 +122,147 @@ public class WindowCleaningServiceImplTest {
 
     @Test
     public void calculateBookingCostReturnsExpectedCost(){
-        Assertions.assertEquals(9, windowCleaningService.calculateTotalCostForBooking(1));
-        Assertions.assertEquals(10, windowCleaningService.calculateTotalCostForBooking(2));
-        Assertions.assertEquals(15, windowCleaningService.calculateTotalCostForBooking(3));
-        Assertions.assertEquals(17, windowCleaningService.calculateTotalCostForBooking(4));
+        Assertions.assertEquals(9, windowCleaningService.calculateCost(1));
+        Assertions.assertEquals(10, windowCleaningService.calculateCost(2));
+        Assertions.assertEquals(15, windowCleaningService.calculateCost(3));
+        Assertions.assertEquals(17, windowCleaningService.calculateCost(4));
     }
 
     @Test
     public void calculateBookingCostThrowsIllegalArgumentException(){
         IllegalArgumentException illegalArgumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            windowCleaningService.calculateTotalCostForBooking(5);
+            windowCleaningService.calculateCost(5);
         });
 
         Assertions.assertEquals("Booking number not found", illegalArgumentException.getMessage());
+    }
+
+    @Test
+    public void retrieveCustomerBookingsWithCustomerNumberReturnsExpectedList() {
+        List<CustomerBooking> customerBookings = List.of(new CustomerBooking(5, 5, LocalDate.of(2025, 12, 1)));
+        windowCleaningService.addBooking(customerBookings.get(0));
+
+        Assertions.assertEquals(customerBookings, windowCleaningService.retrieveCustomerBookings(5));
+    }
+
+    @Test
+    public void retrieveCustomerBookingsWithDateRangeReturnsExpectedList() {
+        Assertions.assertEquals(3, windowCleaningService.retrieveCustomerBookings(LocalDate.of(2025, 9, 1), LocalDate.of(2025, 10, 3)).size());
+        Assertions.assertEquals(3, windowCleaningService.retrieveCustomerBookings(LocalDate.of(2025, 10, 1), LocalDate.of(2025, 10, 3)).size());
+        Assertions.assertEquals(3, windowCleaningService.retrieveCustomerBookings(LocalDate.of(2025, 9, 1), LocalDate.of(2025, 10, 1)).size());
+        Assertions.assertEquals(4, windowCleaningService.retrieveCustomerBookings(LocalDate.of(2025, 9, 1), LocalDate.of(2026, 1, 10)).size());
+        Assertions.assertEquals(1, windowCleaningService.retrieveCustomerBookings(LocalDate.of(2026, 1, 10), LocalDate.of(2026, 5, 10)).size());
+        Assertions.assertEquals(0, windowCleaningService.retrieveCustomerBookings(LocalDate.of(2026, 2, 10), LocalDate.of(2026, 5, 10)).size());
+    }
+
+    @Test
+    public void retrieveCustomerBookingsWithDateRangeThrowsIllegalArgumentException() {
+        NullPointerException nullPointerException1 = Assertions.assertThrows(NullPointerException.class, () -> {
+            windowCleaningService.retrieveCustomerBookings(null, LocalDate.of(2025, 10, 3));
+        });
+
+        NullPointerException nullPointerException2 = Assertions.assertThrows(NullPointerException.class, () -> {
+            windowCleaningService.retrieveCustomerBookings(LocalDate.of(2025, 10, 3), null);
+        });
+
+        NullPointerException nullPointerException3 = Assertions.assertThrows(NullPointerException.class, () -> {
+            windowCleaningService.retrieveCustomerBookings(null, null);
+        });
+
+        Assertions.assertEquals("LocalDate start cannot be null", nullPointerException1.getMessage());
+        Assertions.assertEquals("LocalDate end cannot be null", nullPointerException2.getMessage());
+        Assertions.assertEquals("LocalDate start cannot be null", nullPointerException3.getMessage());
+    }
+
+    @Test
+    public void calculateCostWithDateRangeReturnsExpectedValue() {
+        Assertions.assertEquals(41, windowCleaningService.calculateCost(LocalDate.of(2025, 9, 1), LocalDate.of(2025, 10, 3)));
+        Assertions.assertEquals(41, windowCleaningService.calculateCost(LocalDate.of(2025, 10, 1), LocalDate.of(2025, 10, 3)));
+        Assertions.assertEquals(41, windowCleaningService.calculateCost(LocalDate.of(2025, 9, 1), LocalDate.of(2025, 10, 1)));
+        Assertions.assertEquals(51, windowCleaningService.calculateCost(LocalDate.of(2025, 9, 1), LocalDate.of(2026, 1, 10)));
+        Assertions.assertEquals(10, windowCleaningService.calculateCost(LocalDate.of(2026, 1, 10), LocalDate.of(2026, 5, 10)));
+        Assertions.assertEquals(0, windowCleaningService.calculateCost(LocalDate.of(2026, 2, 10), LocalDate.of(2026, 5, 10)));
+
+    }
+    @Test
+    public void calculateCostWithDateRangeThrowsIllegalArgumentException() {
+        NullPointerException nullPointerException1 = Assertions.assertThrows(NullPointerException.class, () -> {
+            windowCleaningService.calculateCost(null, LocalDate.of(2025, 10, 3));
+        });
+
+        NullPointerException nullPointerException2 = Assertions.assertThrows(NullPointerException.class, () -> {
+            windowCleaningService.calculateCost(LocalDate.of(2025, 10, 3), null);
+        });
+
+        NullPointerException nullPointerException3 = Assertions.assertThrows(NullPointerException.class, () -> {
+            windowCleaningService.calculateCost(null, null);
+        });
+
+        Assertions.assertEquals("LocalDate start cannot be null", nullPointerException1.getMessage());
+        Assertions.assertEquals("LocalDate end cannot be null", nullPointerException2.getMessage());
+        Assertions.assertEquals("LocalDate start cannot be null", nullPointerException3.getMessage());
+    }
+
+    @Test
+    public void calculateCostWithDateReturnsExpectedValue() {
+        Assertions.assertEquals(41, windowCleaningService.calculateCost(LocalDate.of(2025, 10, 1)));
+        Assertions.assertEquals(10, windowCleaningService.calculateCost(LocalDate.of(2026, 1, 10)));
+        Assertions.assertEquals(0, windowCleaningService.calculateCost(LocalDate.of(2026, 2, 10)));
+    }
+
+    @Test
+    public void calculateCostWithDateThrowsIllegalArgumentException() {
+        NullPointerException nullPointerException = Assertions.assertThrows(NullPointerException.class, () -> {
+            windowCleaningService.calculateCost(null);
+        });
+
+        Assertions.assertEquals("LocalDate cannot be null", nullPointerException.getMessage());
+    }
+
+    @Test
+    public void updateBookingStatusSuccessfullyUpdatesStatusCompleted() {
+        CustomerBooking customerBooking = new CustomerBooking(5, 5, LocalDate.of(2025, 12, 1));
+        windowCleaningService.addBooking(customerBooking);
+        windowCleaningService.updateBookingStatus(5, Status.COMPLETED);
+
+        Assertions.assertEquals(Status.COMPLETED, customerBooking.getStatus());
+    }
+
+    @Test
+    public void updateBookingStatusSuccessfullyUpdatesStatusCancelled() {
+        CustomerBooking customerBooking = new CustomerBooking(5, 5, LocalDate.of(2025, 12, 1));
+        windowCleaningService.addBooking(customerBooking);
+        windowCleaningService.updateBookingStatus(5, Status.CANCELLED);
+
+        Assertions.assertEquals(Status.CANCELLED, customerBooking.getStatus());
+    }
+
+
+    @Test
+    public void updateBookingStatusThrowsIllegalArgumentExceptionForInvalidBookingNumber() {
+        IllegalArgumentException illegalArgumentException = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            windowCleaningService.updateBookingStatus(5, Status.CANCELLED);
+        });
+
+        Assertions.assertEquals("Booking number not found", illegalArgumentException.getMessage());
+    }
+
+    @Test
+    public void updateBookingStatusThrowsIllegalArgumentExceptionForInvalidStatus() {
+        CustomerBooking customerBooking = new CustomerBooking(5, 5, LocalDate.of(2025, 12, 1));
+        windowCleaningService.addBooking(customerBooking);
+
+        IllegalArgumentException illegalArgumentException1 = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            windowCleaningService.updateBookingStatus(5, Status.SCHEDULED);
+        });
+
+        IllegalArgumentException illegalArgumentException2 = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            windowCleaningService.updateBookingStatus(5, Status.COMPLETED);
+
+            windowCleaningService.updateBookingStatus(5, Status.CANCELLED);
+        });
+
+        Assertions.assertEquals("Booking status is already SCHEDULED", illegalArgumentException1.getMessage());
+        Assertions.assertEquals("Booking already completed", illegalArgumentException2.getMessage());
     }
 }

@@ -1,13 +1,11 @@
 package org.example.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.example.model.CustomerBooking;
 import org.example.model.Customer;
+import org.example.model.Status;
 import org.example.utils.ValidationUtil;
 
 /**
@@ -67,6 +65,7 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
         ValidationUtil.checkDateNotInPast(customerBooking.getBookingDate());
         ValidationUtil.checkDuplicateKeyInMap(customerBookings, customerBooking.getBookingNumber(), "CustomerBooking");
 
+        customerBooking.setStatus(Status.SCHEDULED);
 
         customerBookings.put(customerBooking.getBookingNumber(), customerBooking);
     }
@@ -74,6 +73,25 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     @Override
     public List<CustomerBooking> retrieveCustomerBookings() {
         return customerBookings.values().stream().toList();
+    }
+
+    @Override
+    public List<CustomerBooking> retrieveCustomerBookings(int customerNumber) {
+        return customerBookings.values()
+                .stream()
+                .filter(b -> b.getCustomerNumber() == customerNumber)
+                .toList();
+    }
+
+    @Override
+    public List<CustomerBooking> retrieveCustomerBookings(LocalDate start, LocalDate end) {
+        ValidationUtil.checkObjectIsNotNull(start, LOCAL_DATE_OBJECT_NAME + " start");
+        ValidationUtil.checkObjectIsNotNull(end, LOCAL_DATE_OBJECT_NAME + " end");
+
+        return customerBookings.values()
+                .stream()
+                .filter(b -> !b.getBookingDate().isBefore(start) && !b.getBookingDate().isAfter(end))
+                .toList();
     }
 
     @Override
@@ -88,7 +106,7 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
     }
 
     @Override
-    public int calculateTotalCostForBooking(final int bookingNumber) {
+    public int calculateCost(final int bookingNumber) {
         if (!customerBookings.containsKey(bookingNumber)) {
             throw new IllegalArgumentException("Booking number not found");
         }
@@ -98,5 +116,45 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
                 .filter(b -> b.getBookingNumber() == bookingNumber)
                 .mapToInt(b -> customers.get(b.getCustomerNumber()).getWindows() + COST_PER_PROPERTY)
                 .sum();
+    }
+
+    @Override
+    public int calculateCost(LocalDate start, LocalDate end) {
+        ValidationUtil.checkObjectIsNotNull(start, LOCAL_DATE_OBJECT_NAME + " start");
+        ValidationUtil.checkObjectIsNotNull(end, LOCAL_DATE_OBJECT_NAME + " end");
+        return customerBookings.values()
+                .stream()
+                .filter(b -> !b.getBookingDate().isBefore(start) && !b.getBookingDate().isAfter(end))
+                .mapToInt(b -> customers.get(b.getCustomerNumber()).getWindows() + COST_PER_PROPERTY)
+                .sum();
+    }
+
+    @Override
+    public int calculateCost(LocalDate date) {
+        ValidationUtil.checkObjectIsNotNull(date, LOCAL_DATE_OBJECT_NAME);
+        return customerBookings.values()
+                .stream()
+                .filter(b -> b.getBookingDate().equals(date))
+                .mapToInt(b -> customers.get(b.getCustomerNumber()).getWindows() + COST_PER_PROPERTY)
+                .sum();
+    }
+
+    @Override
+    public void updateBookingStatus(int bookingNumber, Status status) {
+        ValidationUtil.checkObjectIsNotNull(status, "Status");
+
+        if (!customerBookings.containsKey(bookingNumber)) {
+            throw new IllegalArgumentException("Booking number not found");
+        }
+
+        if (customerBookings.get(bookingNumber).getStatus().equals(status)) {
+            throw new IllegalArgumentException("Booking status is already " + status);
+        }
+
+        if (customerBookings.get(bookingNumber).getStatus().equals(Status.COMPLETED)) {
+            throw new IllegalArgumentException("Booking already completed");
+        }
+
+        customerBookings.get(bookingNumber).setStatus(status);
     }
 }
