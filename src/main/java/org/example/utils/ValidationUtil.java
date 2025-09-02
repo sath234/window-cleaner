@@ -1,18 +1,15 @@
 package org.example.utils;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * Utility class for validation operations.
  */
 public final class ValidationUtil {
-
-    private ValidationUtil() {
-        throw new UnsupportedOperationException(
-                "Utility class cannot be instantiated");
-    }
 
     /**
      * Checks if an object is already present in the list.
@@ -26,6 +23,22 @@ public final class ValidationUtil {
         if (list.contains(object)) {
             throw new IllegalArgumentException("Duplicate "
                     + object.getClass().getSimpleName() + " not allowed");
+        }
+    }
+
+    /**
+     * Checks if an object is already present in the HashMap.
+     *
+     * @param <T>        the type of object
+     * @param map        the Map to check
+     * @param key        the key to check for
+     * @param errorMessage the error message for the object type
+     */
+    public static <T> void checkDuplicateKeyInMap(final Map<Integer, T> map,
+                                                         int key, String errorMessage) {
+        if (map.containsKey(key)) {
+            throw new IllegalArgumentException("Duplicate "
+                    + errorMessage + " not allowed");
         }
     }
 

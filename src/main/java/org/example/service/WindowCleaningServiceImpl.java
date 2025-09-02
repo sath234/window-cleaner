@@ -32,75 +32,71 @@ public final class WindowCleaningServiceImpl implements WindowCleaningService {
      */
     public static final String CUSTOMER_OBJECT_NAME = "Customer";
     /**
-     * List of customers.
-     */
-    private final List<Customer> customerList;
-    /**
      * List of bookings.
      */
-    private final List<CustomerBooking> customerBookingList;
+    private final Map<Integer, CustomerBooking> customerBookings;
     /**
      * Map of customers by number.
      */
-    private final Map<Integer, Customer> customerMap;
+    private final Map<Integer, Customer> customers;
 
     /**
-     * Constructor for BookingServiceImpl.
+     * Constructor.
      */
     public WindowCleaningServiceImpl() {
-        this.customerList = new ArrayList<>();
-        this.customerBookingList = new ArrayList<>();
-        this.customerMap = new HashMap<>();
+        this.customerBookings = new HashMap<Integer, CustomerBooking>();
+        this.customers = new HashMap<Integer, Customer>();
     }
 
     @Override
     public void addCustomer(final Customer customer) {
-        ValidationUtil.checkDuplicateObjectInList(customerList, customer);
         ValidationUtil.checkObjectIsNotNull(customer, CUSTOMER_OBJECT_NAME);
+        ValidationUtil.checkDuplicateKeyInMap(customers, customer.getCustomerNumber(), "Customer");
 
-        customerList.add(customer);
-        customerMap.put(customer.getCustomerNumber(), customer);
+        customers.put(customer.getCustomerNumber(), customer);
     }
 
     @Override
     public List<Customer> retrieveCustomers() {
-        return customerList;
+        return customers.values().stream().toList();
     }
 
     @Override
     public void addBooking(final CustomerBooking customerBooking) {
-        ValidationUtil.checkDuplicateObjectInList(customerBookingList, customerBooking);
         ValidationUtil.checkObjectIsNotNull(customerBooking, BOOKING_OBJECT_NAME);
         ValidationUtil.checkDateNotInPast(customerBooking.getBookingDate());
+        ValidationUtil.checkDuplicateKeyInMap(customerBookings, customerBooking.getBookingNumber(), "CustomerBooking");
 
-        customerBookingList.add(customerBooking);
+
+        customerBookings.put(customerBooking.getBookingNumber(), customerBooking);
     }
 
     @Override
     public List<CustomerBooking> retrieveCustomerBookings() {
-        return customerBookingList;
+        return customerBookings.values().stream().toList();
     }
 
     @Override
     public int calculateWindowsCleanedOnSpecificDate(final LocalDate date) {
         ValidationUtil.checkObjectIsNotNull(date, LOCAL_DATE_OBJECT_NAME);
 
-        return customerBookingList.stream()
-                .filter(booking -> booking.getBookingDate().equals(date))
-                .mapToInt(booking -> customerMap.get(
-                        booking.getCustomerNumber()).getWindows())
-                .sum();
+       return customerBookings.values()
+               .stream()
+               .filter(b -> b.getBookingDate().equals(date))
+               .mapToInt(b -> customers.get(b.getCustomerNumber()).getWindows())
+               .sum();
     }
 
     @Override
     public int calculateTotalCostForBooking(final int bookingNumber) {
-        CustomerBooking customerBooking = customerBookingList.stream()
-                .filter(b -> b.getBookingNumber() == bookingNumber)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Booking number not found"));
+        if (!customerBookings.containsKey(bookingNumber)) {
+            throw new IllegalArgumentException("Booking number not found");
+        }
 
-        return customerMap.get(customerBooking.getCustomerNumber()).getWindows()
-                + COST_PER_PROPERTY;
+        return customerBookings.values()
+                .stream()
+                .filter(b -> b.getBookingNumber() == bookingNumber)
+                .mapToInt(b -> customers.get(b.getCustomerNumber()).getWindows() + COST_PER_PROPERTY)
+                .sum();
     }
 }
